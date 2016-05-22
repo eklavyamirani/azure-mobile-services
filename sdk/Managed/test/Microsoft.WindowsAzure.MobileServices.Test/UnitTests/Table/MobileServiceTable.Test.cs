@@ -1029,6 +1029,30 @@ namespace Microsoft.WindowsAzure.MobileServices.Test
         }
 
         [AsyncTestMethod]
+        public async Task InsertAsyncWithCustomHeaders()
+        {
+            var userDefinedParameters = new Dictionary<string, string>() { { "__systemproperties", "__createdAt" } };
+            var myHeaders = new Dictionary<string, string>() { { "x-zumo-test", "test" } };
+            TestHttpHandler hijack = new TestHttpHandler();
+            IMobileServiceClient service = new MobileServiceClient("http://test.com", "secret...", hijack);
+            var table = service.GetTable("tests") as MobileServiceTable;
+            table.SystemProperties = MobileServiceSystemProperties.CreatedAt;
+
+            JObject obj = JToken.Parse("{\"value\": \"new\"}") as JObject;
+            hijack.SetResponseContent("{\"id\":\"A\",\"value\":\"new\", \"__version\":\"XYZ\",\"__unknown\":12,\"__CREATEDat\":\"05-22-16\"}");
+            JToken newObj = await table.InsertAsync(obj, userDefinedParameters, myHeaders);
+
+            Assert.IsNotNull(newObj);
+            Assert.AreNotEqual(obj, newObj);
+            Assert.AreEqual("A", (string)newObj["id"]);
+            // Ensure that my headers are not modified
+            Assert.AreEqual(1, myHeaders.Count);
+            Assert.AreEqual("test", myHeaders["x-zumo-test"]);
+
+            Assert.AreEqual(hijack.Request.Headers.GetValues("x-zumo-test").First(), "test");
+        }
+
+        [AsyncTestMethod]
         public async Task InsertAsyncWithIntId_DoesNotStripSystemProperties()
         {
             var userDefinedParameters = new Dictionary<string, string>() { { "state", "AL" } };

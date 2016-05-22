@@ -231,6 +231,24 @@ namespace Microsoft.WindowsAzure.MobileServices
         /// <summary>
         /// Inserts an <paramref name="instance"/> into the table.
         /// </summary>
+        /// <param name="instance">The instance to insert into the table.</param>
+        /// <param name="parameters">
+        /// A dictionary of user-defined parameters and values to include in 
+        /// the request URI query string.
+        /// </param>
+        /// <param name="headers">
+        /// A dictionary of user-defined headers and values to include in
+        /// the request body.
+        /// </param>
+        /// <returns>A task that will complete when the insert finishes.</returns>
+        public Task<JToken> InsertAsync(JObject instance, IDictionary<string, string> parameters, IDictionary<string, string> headers)
+        {
+            return this.InsertAsync(instance, parameters, MobileServiceFeatures.UntypedTable, headers);
+        }
+
+        /// <summary>
+        /// Inserts an <paramref name="instance"/> into the table.
+        /// </summary>
         /// <param name="instance">
         /// The instance to insert into the table.
         /// </param>
@@ -244,7 +262,7 @@ namespace Microsoft.WindowsAzure.MobileServices
         /// <returns>
         /// A task that will complete when the insert finishes.
         /// </returns>
-        internal async Task<JToken> InsertAsync(JObject instance, IDictionary<string, string> parameters, MobileServiceFeatures features)
+        internal async Task<JToken> InsertAsync(JObject instance, IDictionary<string, string> parameters, MobileServiceFeatures features, IDictionary<string, string> requestHeaders = null)
         {
             if (instance == null)
             {
@@ -270,7 +288,7 @@ namespace Microsoft.WindowsAzure.MobileServices
 
             return await this.TransformHttpException(async () =>
             {
-                MobileServiceHttpResponse response = await this.MobileServiceClient.HttpClient.RequestAsync(HttpMethod.Post, uriString, this.MobileServiceClient.CurrentUser, instance.ToString(Formatting.None), true, features: this.Features | features);
+                MobileServiceHttpResponse response = await this.MobileServiceClient.HttpClient.RequestAsync(HttpMethod.Post, uriString, this.MobileServiceClient.CurrentUser, instance.ToString(Formatting.None), true, features: this.Features | features, requestHeaders: requestHeaders);
                 var result = GetJTokenFromResponse(response);
                 return RemoveUnrequestedSystemProperties(result, parameters, response.Etag);
             });
