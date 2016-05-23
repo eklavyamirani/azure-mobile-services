@@ -1035,7 +1035,7 @@ namespace Microsoft.WindowsAzure.MobileServices.Test
             var myHeaders = new Dictionary<string, string>() { { "x-zumo-test", "test" } };
             TestHttpHandler hijack = new TestHttpHandler();
             IMobileServiceClient service = new MobileServiceClient("http://test.com", "secret...", hijack);
-            var table = service.GetTable("tests") as MobileServiceTable;
+            var table = service.GetTable("tests");
             table.SystemProperties = MobileServiceSystemProperties.CreatedAt;
 
             JObject obj = JToken.Parse("{\"value\": \"new\"}") as JObject;

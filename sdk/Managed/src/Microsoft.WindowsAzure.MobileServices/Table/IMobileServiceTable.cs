@@ -85,6 +85,21 @@ namespace Microsoft.WindowsAzure.MobileServices
         Task<JToken> InsertAsync(JObject instance, IDictionary<string, string> parameters);
 
         /// <summary>
+        /// Inserts an <paramref name="instance"/> into the table.
+        /// </summary>
+        /// <param name="instance">The instance to insert into the table.</param>
+        /// <param name="parameters">
+        /// A dictionary of user-defined parameters and values to include in 
+        /// the request URI query string.
+        /// </param>
+        /// <param name="headers">
+        /// A dictionary of user-defined headers and values to include in
+        /// the request body.
+        /// </param>
+        /// <returns>A task that will complete when the insert finishes.</returns>
+        Task<JToken> InsertAsync(JObject instance, IDictionary<string, string> parameters, IDictionary<string, string> headers);
+
+        /// <summary>
         /// Updates an <paramref name="instance"/> in the table.
         /// </summary>
         /// <param name="instance">
